@@ -1,13 +1,22 @@
 import './App.css'
-import React, { useState } from "react";
+import { useState, useEffect } from "react"
 
 function App() {
-  const [tasks, setTasks] = React.useState([])
-  const [taskInput, setTaskInput] = React.useState('')
-  
-  function handleTask(e) {
+
+  const [tasks, setTasks] = useState(() => {
+    const saved = localStorage.getItem('tasks')
+    return saved ? JSON.parse(saved) : []
+  })
+
+  const [taskInput, setTaskInput] = useState('')
+
+  useEffect(() => {
+    localStorage.setItem('tasks', JSON.stringify(tasks))
+  }, [tasks])
+
+  function addTask(e) {
     e.preventDefault()
-    if (taskInput === '') return
+    if (taskInput.trim() === '') return
     setTasks([...tasks, taskInput])
     setTaskInput('')
   }
@@ -24,8 +33,8 @@ function App() {
   return ( 
     <>
       <h1>Welcome to my TODO app made with react !</h1>
-      <form onSubmit={handleTask}>
-        <input type="text" placeholder='Your task' onChange={handleInputChange}/>
+      <form onSubmit={addTask}>
+        <input type="text" placeholder='Your task' onChange={handleInputChange} value={taskInput}/>
         <button type='submit'>Add</button>
       </form>
       <div>
